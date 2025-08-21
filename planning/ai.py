@@ -3,21 +3,16 @@ from transformers import pipeline
 import cv2
 from PIL import Image
 import numpy as np
+import os
 
 model = None
 pipe = None
-cap = None
 
 def init_ai():
-    global model, pipe, cap
+    global model, pipe
     try:
         model = YOLO("best.pt")
         pipe = pipeline(task="depth-estimation", model="depth-anything/Depth-Anything-V2-Base-hf")
-        cap = cv2.VideoCapture(0)
-        
-        if not cap.isOpened():
-            print("Error: Could not open camera")
-            return False
         
         print("AI components initialized successfully")
         return True
@@ -47,17 +42,38 @@ def check_location(x_min, y_min, x_max, y_max, frame_width, frame_height):
     else:
         return "front"
 
-def scan_mode():
-    global model, pipe, cap
+def capture_surroundings():
+    current_directory = os.getcwd()
+    image_filename = os.path.join(current_directory, "captured_image.jpg")
     
-    if cap is None or model is None or pipe is None:
-        print("AI not initialized")
+    cap = cv2.VideoCapture(0)
+    ret, frame = cap.read()
+    if ret:
+        cv2.imwrite(image_filename, frame)
+        print(f"Image saved to {image_filename}")
+    else:
+        print("Failed to capture image")
+    cap.release()
+
+    return image_filename
+
+def scan_mode():
+    global model, pipe
+
+    if model is None:
+        print("AI model not initialized")
+        return None
+
+    if pipe is None:
+        print("Depth estimation pipeline not initialized")
         return None
     
     try:
-        ret, frame = cap.read()
-        if not ret:
-            print("Error: Unable to capture frame")
+        image_path = capture_surroundings()
+        frame = cv2.imread(image_path)
+        
+        if frame is None:
+            print("Error: Unable to read captured image")
             return None
 
         results = model(frame)
@@ -97,7 +113,4 @@ def scan_mode():
         return None
 
 def cleanup_ai():
-    global cap
-    if cap:
-        cap.release()
     cv2.destroyAllWindows()

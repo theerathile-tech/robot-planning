@@ -1,6 +1,6 @@
 import socket
 
-ESP32_IP = "192.168.1.100"
+ESP32_IP = "192.168.1.9"
 PORT = 8080
 wifi_connected = False
 
