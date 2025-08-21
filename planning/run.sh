@@ -1,2 +1,2 @@
-ngrok http --domain=admittedly-wired-halibut.ngrok-free.app 5000
+ngrok http 5000 --domain=admittedly-wired-halibut.ngrok-free.app 
 python main.py

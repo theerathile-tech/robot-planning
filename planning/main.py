@@ -102,6 +102,7 @@ if not initialize_system():
 @app.route('/api/status', methods=['GET'])
 def get_status():
     return jsonify({
+        'wifi_connected': check_wifi_connection(),
         'ai_initialized': ai_initialized,
         'mode': current_mode,
         'speed': current_speed,
