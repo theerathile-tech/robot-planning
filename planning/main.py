@@ -5,9 +5,10 @@ import time
 from wifi import send_command
 from ai import init_ai, scan_mode, cleanup_ai
 import cv2
+import socket
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 ai_initialized = False
 current_mode = "manual"  
@@ -32,6 +33,10 @@ def plastic_detection_loop():
     while plastic_detection_active and current_mode == "auto":
         
         detected_objects = scan_mode()
+        
+        if detected_objects is None:
+            print("Warning: scan_mode() returned None, no objects detected")
+            detected_objects = []
         
         plastic_detected = False
         
@@ -99,6 +104,15 @@ def plastic_detection_loop():
 if not initialize_system():
     print("Warning: System initialization failed. API will run in limited mode.")
 
+def check_wifi_connection():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(2)
+            s.connect((ESP32_IP, PORT))
+            return True
+    except:
+        return False
+
 @app.route('/api/status', methods=['GET'])
 def get_status():
     return jsonify({
@@ -161,6 +175,11 @@ def get_detected_objects():
         return jsonify({'error': 'AI not initialized'}), 500
     
     detected_objects = scan_mode()
+    
+    if detected_objects is None:
+        print("Warning: scan_mode() returned None in API endpoint")
+        return jsonify({'objects': [], 'warning': 'No objects detected or scan error'})
+    
     plastic_objects = []
     
     for obj in detected_objects:
