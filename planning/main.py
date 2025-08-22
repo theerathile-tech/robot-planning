@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import threading
 import time
-from wifi import send_command
+from wifi import send_command, set_ip_address
 from ai import init_ai, scan_mode, cleanup_ai
 import cv2
 import socket
