@@ -5,6 +5,7 @@ import time
 from wifi import send_command, set_ip_address
 from ai import init_ai, scan_mode, cleanup_ai
 import cv2
+import os
 import socket
 
 app = Flask(__name__)
@@ -209,6 +210,21 @@ def set_esp32_ip():
         })
     except socket.error:
         return jsonify({'error': 'Invalid IP address format'}), 400
+
+@app.route('/api/live-image', methods=['GET'])
+def get_latest_image():
+    try:
+        current_directory = os.getcwd()
+        image_path = os.path.join(current_directory, "captured_image.jpg")
+        
+        if not os.path.exists(image_path):
+            return jsonify({'error': 'No image captured yet'}), 404
+        
+        return send_file(image_path, mimetype='image/jpeg')
+        
+    except Exception as e:
+        print(f"Error serving image: {e}")
+        return jsonify({'error': 'Failed to serve image'}), 500
 
 @app.route('/api/shutdown', methods=['POST'])
 def shutdown():
