@@ -4,6 +4,11 @@ ESP32_IP = "192.168.1.9"
 PORT = 8080
 wifi_connected = False
 
+def set_ip_addres(ip_address):
+    global ESP32_IP 
+    ESP32_IP = ip_address
+    print("ESP32 IP address set to:", ESP32_IP)
+
 def check_wifi_connection():
     global wifi_connected
     try:

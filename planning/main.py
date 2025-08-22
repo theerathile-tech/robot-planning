@@ -191,6 +191,25 @@ def get_detected_objects():
     
     return jsonify({'objects': plastic_objects})
 
+@app.route('/api/set-ip', methods=['POST'])
+def set_esp32_ip():
+    data = request.json
+    ip_address = data.get('ip_address')
+    
+    if not ip_address:
+        return jsonify({'error': 'No IP address provided'}), 400
+    
+    try:
+        socket.inet_aton(ip_address)
+        set_ip_address(ip_address)
+        return jsonify({
+            'status': 'IP address updated successfully',
+            'new_ip': ip_address,
+            'wifi_connected': check_wifi_connection()
+        })
+    except socket.error:
+        return jsonify({'error': 'Invalid IP address format'}), 400
+
 @app.route('/api/shutdown', methods=['POST'])
 def shutdown():
     global plastic_detection_active
