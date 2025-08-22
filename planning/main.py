@@ -20,6 +20,7 @@ def initialize_system():
     global ai_initialized
     print("Initializing system components...")
     
+    init_ai()
     ai_initialized = True
     send_command("STOP")
     print("System initialization complete")
@@ -149,13 +150,10 @@ def control_motors():
             return jsonify({'status': 'switched to manual mode'})
         
         if current_mode == "manual":
-            valid_commands = ["FORWARD", "BACKWARD", "TURN_LEFT", "TURN_RIGHT", "STOP"]
-            if command.upper() in valid_commands:
-                send_command(command.upper())
-                current_direction = command.upper()
-                return jsonify({'status': 'command executed', 'command': command.upper()})
-            else:
-                return jsonify({'error': 'invalid command'}), 400
+            print("Executing manual command:", command)
+            send_command(command.upper())
+            current_direction = command.upper()
+            return jsonify({'status': 'command executed', 'command': command.upper()})
     
     if speed is not None and 0 <= speed <= 9:
         current_speed = speed
