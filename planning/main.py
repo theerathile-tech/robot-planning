@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import threading
 import time
@@ -214,8 +214,7 @@ def set_esp32_ip():
 @app.route('/api/live-image', methods=['GET'])
 def get_latest_image():
     try:
-        current_directory = os.getcwd()
-        image_path = os.path.join(current_directory, "captured_image.jpg")
+        image_path = "/home/arun/robot-planning/planning/captured-image.jpg"
         
         if not os.path.exists(image_path):
             return jsonify({'error': 'No image captured yet'}), 404

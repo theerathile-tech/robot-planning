@@ -43,8 +43,7 @@ def check_location(x_min, y_min, x_max, y_max, frame_width, frame_height):
         return "front"
 
 def capture_surroundings():
-    current_directory = os.getcwd()
-    image_filename = os.path.join(current_directory, "captured_image.jpg")
+    image_filename = "/home/arun/robot-planning/planning/captured-image.jpg" 
     
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
